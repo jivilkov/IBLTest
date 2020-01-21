@@ -1,6 +1,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "serialport.h"
+
 #include <QMainWindow>
 
 namespace Ui {
@@ -17,6 +19,13 @@ public:
 
 private:
     Ui::MainWindow *ui;
+
+    SerialPort *serial;
+
+
+
+
+
 };
 
 #endif // MAINWINDOW_H

@@ -6,7 +6,7 @@
 
 QT       += core gui
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets serialport
 
 TARGET = IBLTest
 TEMPLATE = app
@@ -24,8 +24,11 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    serialport.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    serialport.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    serialport.ui
