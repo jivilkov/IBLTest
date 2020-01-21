@@ -25,10 +25,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    serialport.cpp
+    iblportsettings.cpp \
+    iblport.cpp
 
 HEADERS  += mainwindow.h \
-    serialport.h
+    iblportsettings.h \
+    iblport.h
 
 FORMS    += mainwindow.ui \
-    serialport.ui
+    iblportsettings.ui

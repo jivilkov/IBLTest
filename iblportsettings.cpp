@@ -1,14 +1,18 @@
-#include "serialport.h"
+#include "iblportsettings.h"
 #include "ui_serialport.h"
 
 #include <QDebug>
 
-SerialPort::SerialPort(QWidget *parent) :
+IblPortSettings::IblPortSettings(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::SerialPort)
 {
     ui->setupUi(this);
     this->setWindowTitle("IBL port settings");
+
+    // Read settings from file
+    settings = new QSettings("settings", QSettings::IniFormat);
+    readSettings();
 
     // Set lists values for ComboBox's
     setIBLPortList(ui->comboBoxNumber);
@@ -18,28 +22,21 @@ SerialPort::SerialPort(QWidget *parent) :
     setStopBitsList(ui->comboBoxStopBits);
     setFlowControlList(ui->comboBoxFlowControl);
 
-    // Read settings from file
-    settings = new QSettings("settings", QSettings::IniFormat);
-    readSettings();
-
     // Set selected values in ComboBox's
-    ui->comboBoxNumber->setCurrentText(port);
-    ui->comboBoxBaudRate->setCurrentText(QString("%0").arg(baud));
-    ui->comboBoxDataBits->setCurrentText(QString("%0").arg(bits));
-    ui->comboBoxParity->setCurrentIndex(part ? part - 1 : part);
-    ui->comboBoxStopBits->setCurrentText(QString("%0").arg(stop));
-    ui->comboBoxFlowControl->setCurrentIndex(flow);
-
-    IBLPort = NULL;
+    ui->comboBoxNumber->setCurrentText(portName);
+    ui->comboBoxBaudRate->setCurrentText(QString("%0").arg(baudRate));
+    ui->comboBoxDataBits->setCurrentText(QString("%0").arg(bitsData));
+    ui->comboBoxParity->setCurrentIndex(parity ? parity - 1 : parity);
+    ui->comboBoxStopBits->setCurrentText(QString("%0").arg(stopBits));
+    ui->comboBoxFlowControl->setCurrentIndex(flowControl);
 }
 
-SerialPort::~SerialPort()
+IblPortSettings::~IblPortSettings()
 {
-    if (IBLPort) delete IBLPort;
     delete ui;
 }
 
-void SerialPort::setIBLPortList(QComboBox *cbox)
+void IblPortSettings::setIBLPortList(QComboBox *cbox)
 {
     QString description;
     QString manufacturer;
@@ -61,7 +58,7 @@ void SerialPort::setIBLPortList(QComboBox *cbox)
     }
 }
 
-void SerialPort::setBaudRateList(QComboBox *cbox)
+void IblPortSettings::setBaudRateList(QComboBox *cbox)
 {
     cbox->addItem(QString("%0").arg(QSerialPort::Baud1200), QSerialPort::Baud1200);
     cbox->addItem(QString("%0").arg(QSerialPort::Baud2400), QSerialPort::Baud2400);
@@ -73,7 +70,7 @@ void SerialPort::setBaudRateList(QComboBox *cbox)
     cbox->addItem(QString("%0").arg(QSerialPort::Baud115200), QSerialPort::Baud115200);
 }
 
-void SerialPort::setDataBitsList(QComboBox *cbox)
+void IblPortSettings::setDataBitsList(QComboBox *cbox)
 {
     cbox->addItem(QString("%0").arg(QSerialPort::Data5), QSerialPort::Data5);
     cbox->addItem(QString("%0").arg(QSerialPort::Data6), QSerialPort::Data6);
@@ -81,7 +78,7 @@ void SerialPort::setDataBitsList(QComboBox *cbox)
     cbox->addItem(QString("%0").arg(QSerialPort::Data8), QSerialPort::Data8);
 }
 
-void SerialPort::setParityList(QComboBox *cbox)
+void IblPortSettings::setParityList(QComboBox *cbox)
 {
     cbox->addItem(QString("None"), QSerialPort::NoParity);
     cbox->addItem(QString("Even"), QSerialPort::EvenParity);
@@ -90,7 +87,7 @@ void SerialPort::setParityList(QComboBox *cbox)
     cbox->addItem(QString("Mark"), QSerialPort::MarkParity);
 }
 
-void SerialPort::setStopBitsList(QComboBox *cbox)
+void IblPortSettings::setStopBitsList(QComboBox *cbox)
 {
     cbox->addItem(QString("%0").arg(QSerialPort::OneStop), QSerialPort::OneStop);
 #ifdef Q_OS_WIN
@@ -99,51 +96,30 @@ void SerialPort::setStopBitsList(QComboBox *cbox)
     cbox->addItem(QString("%0").arg(QSerialPort::TwoStop), QSerialPort::TwoStop);
 }
 
-void SerialPort::setFlowControlList(QComboBox *cbox)
+void IblPortSettings::setFlowControlList(QComboBox *cbox)
 {
     cbox->addItem(QString("None"), QSerialPort::NoFlowControl);
     cbox->addItem(QString("RTS/CTS"), QSerialPort::HardwareControl);
     cbox->addItem(QString("XON/XOFF"), QSerialPort::SoftwareControl);
 }
 
-void SerialPort::reconnect()
-{
-    // Если порт открыт - закроем
-    if (IBLPort != NULL && IBLPort->isOpen()){
-        IBLPort->flush();
-        IBLPort->clear();
-        IBLPort->close();
-        IBLPort->deleteLater();
-        IBLPort = NULL;
-    }
-
-    // Подключимся
-    IBLPort = new QSerialPort();
-    IBLPort->setPortName(port);
-    IBLPort->setBaudRate(baud);
-    IBLPort->setDataBits(QSerialPort::DataBits(bits));
-    IBLPort->setParity(QSerialPort::Parity(part));
-    IBLPort->setStopBits(QSerialPort::StopBits(stop));
-    IBLPort->setFlowControl(QSerialPort::FlowControl(flow));
-}
-
-void SerialPort::applySettings()
+void IblPortSettings::applySettings()
 {
     writeSettings();
     readSettings();
 }
 
-void SerialPort::readSettings()
+void IblPortSettings::readSettings()
 {
-    port = settings->value("serial/port", "").toString();
-    baud = settings->value("serial/baud", QSerialPort::Baud9600).toInt();
-    bits = settings->value("serial/bits", QSerialPort::Data8).toInt();
-    part = settings->value("serial/part", QSerialPort::NoParity).toInt();
-    stop = settings->value("serial/stop", QSerialPort::OneStop).toInt();
-    flow = settings->value("serial/flow", QSerialPort::NoFlowControl).toInt();
+    portName = settings->value("serial/port", "").toString();
+    baudRate = settings->value("serial/baud", QSerialPort::Baud9600).toInt();
+    bitsData = settings->value("serial/bits", QSerialPort::Data8).toInt();
+    parity = settings->value("serial/part", QSerialPort::NoParity).toInt();
+    stopBits = settings->value("serial/stop", QSerialPort::OneStop).toInt();
+    flowControl = settings->value("serial/flow", QSerialPort::NoFlowControl).toInt();
 }
 
-void SerialPort::writeSettings()
+void IblPortSettings::writeSettings()
 {
     settings->setValue("serial/port", ui->comboBoxNumber->currentText());
     settings->setValue("serial/baud", ui->comboBoxBaudRate->itemData(ui->comboBoxBaudRate->currentIndex()).toInt());
@@ -152,22 +128,11 @@ void SerialPort::writeSettings()
     settings->setValue("serial/stop", static_cast<QSerialPort::StopBits>(ui->comboBoxStopBits->itemData(ui->comboBoxStopBits->currentIndex()).toInt()));
     settings->setValue("serial/flow", static_cast<QSerialPort::FlowControl>(ui->comboBoxFlowControl->itemData(ui->comboBoxFlowControl->currentIndex()).toInt()));
     settings->sync();
+
+    emit changeSettings();
 }
 
-void SerialPort::viewCurrentSettings()
-{
-    if (IBLPort != NULL && IBLPort->isOpen()) {
-        qDebug() << "IBLPort name: " << IBLPort->portName();
-        qDebug() << "Baud rate: " << IBLPort->baudRate();
-        qDebug() << "Data bits: " << IBLPort->dataBits();
-        qDebug() << "Parity:" << IBLPort->parity();
-        qDebug() << "Stop bits: " << IBLPort->stopBits();
-        qDebug() << "Flow control: " << IBLPort->flowControl();
-    }
-}
-
-void SerialPort::on_buttonApply_clicked()
+void IblPortSettings::on_buttonApply_clicked()
 {
     applySettings();
-    reconnect();
 }

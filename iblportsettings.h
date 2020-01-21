@@ -1,5 +1,5 @@
-#ifndef SERIALPORT_H
-#define SERIALPORT_H
+#ifndef IBLPORTSETTINGS_H
+#define IBLPORTSETTINGS_H
 
 #include <QSerialPort>
 #include <QSerialPortInfo>
@@ -13,13 +13,23 @@ namespace Ui {
 class SerialPort;
 }
 
-class SerialPort : public QWidget
+class IblPortSettings : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit SerialPort(QWidget *parent = 0);
-    ~SerialPort();
+    explicit IblPortSettings(QWidget *parent = 0);
+    ~IblPortSettings();
+
+    QString portName;
+    int baudRate;
+    int bitsData;
+    int parity;
+    int stopBits;
+    int flowControl;
+
+signals:
+    void changeSettings();
 
 private slots:
     void on_buttonApply_clicked();
@@ -28,7 +38,6 @@ private:
     Ui::SerialPort *ui;
 
     QSettings *settings;
-    QSerialPort *IBLPort;
 
     void setIBLPortList(QComboBox *cbox);
     void setBaudRateList(QComboBox *cbox);
@@ -37,22 +46,10 @@ private:
     void setStopBitsList(QComboBox *cbox);
     void setFlowControlList(QComboBox *cbox);
 
-    QString port;
-    int baud;
-    int bits;
-    int part;
-    int stop;
-    int flow;
-
-    void reconnect();
     void applySettings();
     void readSettings();
     void writeSettings();
 
-    void viewCurrentSettings();
-
-private slots:
-
 };
 
-#endif // SERIALPORT_H
+#endif // IBLPORTSETTINGS_H

@@ -1,7 +1,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "serialport.h"
+#include "iblport.h"
+#include "iblportsettings.h"
 
 #include <QMainWindow>
 
@@ -17,10 +18,18 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+private slots:
+    void on_buttonSettings_clicked();
+
+    void on_buttonDisconnect_clicked();
+
+    void on_buttonConnect_clicked();
+
 private:
     Ui::MainWindow *ui;
 
-    SerialPort *serial;
+    IBLPort *iblPort;
+    IblPortSettings *serial;
 
 
 
