@@ -1,12 +1,13 @@
 #include "iblport.h"
-
 #include <QDebug>
+
+#define SIZE_PACK 44
 
 IBLPort::IBLPort()
 {
     serial = NULL;
     settings = new IblPortSettings();
-    connect(settings, SIGNAL(changeSettings()), this, SLOT(reconnect()));
+    connect(settings, SIGNAL(changeSettings()), this, SLOT(stop()));
 }
 
 IBLPort::~IBLPort()
@@ -22,7 +23,7 @@ void IBLPort::showSettings()
 
 void IBLPort::stop()
 {
-    workFlag = false;
+    if (this->isRunning()){ workFlag = false; }
 }
 
 void IBLPort::viewSettings()
@@ -37,7 +38,7 @@ void IBLPort::viewSettings()
     }
 }
 
-bool IBLPort::connect()
+bool IBLPort::connectPort()
 {
     serial = new QSerialPort();
     serial->setPortName(settings->portName);
@@ -48,37 +49,44 @@ bool IBLPort::connect()
     serial->setFlowControl(QSerialPort::FlowControl(settings->flowControl));
     if (serial->open(QIODevice::ReadWrite)){ return true; }
     else return false;
-
 }
 
-void IBLPort::disconnect()
+void IBLPort::disconnectPort()
 {
-    if (serial!=NULL && serial->isOpen()) {
+    if (serial!=NULL && serial->isOpen()){
         serial->flush();
         serial->close();
         serial = NULL;
-        qDebug() << "Com port close";
+        qDebug() << "Port close";
     }
-}
-
-void IBLPort::reconnect()
-{
-    workFlag = false;
-    disconnect();
-    connect();
 }
 
 void IBLPort::run()
 {
     workFlag = true;
-    if (connect()) {
-        qDebug() << "Port connect";
+    if (connectPort()){
 
-        // Делаем вид, что работаем
-        while (workFlag);
-        if (!workFlag);
+        qDebug() << "Port open";
+        viewSettings();
+
+        // Workin
+        qDebug() << "Serial thread started";
+
+        while (workFlag){
+
+            if (serial->bytesAvailable() == SIZE_PACK){
+                QByteArray pack = serial->readAll();
+                byteList.append(pack);
+                serial->flush();
+            }
+
+        };
+
+        qDebug() << "Serial thread stopped";
+        disconnectPort();
 
     } else {
-        qDebug() << "error open port,  " << serial->error();
+        qDebug() << "Error open port,  " << serial->error();
     }
+
 }

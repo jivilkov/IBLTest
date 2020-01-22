@@ -19,11 +19,12 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_buttonSettings_clicked();
+    void on_actionConnect_triggered();
+    void on_actionDisconnect_triggered();
+    void on_actionSettings_triggered();
 
-    void on_buttonDisconnect_clicked();
-
-    void on_buttonConnect_clicked();
+    void disabledMenuAtConnection();
+    void disabledMenuAtDisconnection();
 
 private:
     Ui::MainWindow *ui;

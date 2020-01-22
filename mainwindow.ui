@@ -13,47 +13,7 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
-  <widget class="QWidget" name="centralWidget">
-   <widget class="QPushButton" name="buttonConnect">
-    <property name="geometry">
-     <rect>
-      <x>50</x>
-      <y>30</y>
-      <width>83</width>
-      <height>25</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Connect</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="buttonDisconnect">
-    <property name="geometry">
-     <rect>
-      <x>170</x>
-      <y>30</y>
-      <width>83</width>
-      <height>25</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Disconnect</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="buttonSettings">
-    <property name="geometry">
-     <rect>
-      <x>290</x>
-      <y>30</y>
-      <width>83</width>
-      <height>25</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Settings</string>
-    </property>
-   </widget>
-  </widget>
+  <widget class="QWidget" name="centralWidget"/>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
@@ -63,6 +23,15 @@
      <height>22</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuCom_port">
+    <property name="title">
+     <string>Com port</string>
+    </property>
+    <addaction name="actionConnect"/>
+    <addaction name="actionDisconnect"/>
+    <addaction name="actionSettings"/>
+   </widget>
+   <addaction name="menuCom_port"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -73,6 +42,21 @@
    </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionConnect">
+   <property name="text">
+    <string>Connect</string>
+   </property>
+  </action>
+  <action name="actionDisconnect">
+   <property name="text">
+    <string>Disconnect</string>
+   </property>
+  </action>
+  <action name="actionSettings">
+   <property name="text">
+    <string>Settings</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>

@@ -33,6 +33,7 @@ IblPortSettings::IblPortSettings(QWidget *parent) :
 
 IblPortSettings::~IblPortSettings()
 {
+    if (settings) delete settings;
     delete ui;
 }
 

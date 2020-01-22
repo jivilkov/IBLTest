@@ -15,19 +15,22 @@ public:
     ~IBLPort();
 
     void showSettings();
+
+    QList<QByteArray> byteList; // Buffer pack
+
+public slots:
     void stop();
 
 private:
     IblPortSettings *settings;
     QSerialPort *serial;
+
     void viewSettings();
+
     bool workFlag;
 
-    bool connect();
-    void disconnect();
-
-private slots:
-    void reconnect();
+    bool connectPort();
+    void disconnectPort();
 
 protected:
     virtual void run();
