@@ -25,12 +25,19 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    iblportsettings.cpp \
-    iblport.cpp
+    settings.cpp \
+    serial.cpp \
+    datamodel.cpp \
+    rawhandler.cpp \
+    crc16.cpp
 
 HEADERS  += mainwindow.h \
-    iblportsettings.h \
-    iblport.h
+    settings.h \
+    serial.h \
+    datamodel.h \
+    ibldata.h \
+    rawhandler.h \
+    crc16.h
 
 FORMS    += mainwindow.ui \
-    iblportsettings.ui
+    settings.ui

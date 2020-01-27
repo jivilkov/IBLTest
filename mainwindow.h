@@ -1,10 +1,15 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "iblport.h"
-#include "iblportsettings.h"
+#define REQUEST_INTERVAL 1000
+
+#include "settings.h"
+#include "serial.h"
+#include "datamodel.h"
 
 #include <QMainWindow>
+#include <QTimer>
+#include <QScrollBar>
 
 namespace Ui {
 class MainWindow;
@@ -27,13 +32,18 @@ private slots:
     void disabledMenuAtDisconnection();
 
 private:
+    Settings *settings;
     Ui::MainWindow *ui;
+    Serial *serial;
+    DataModel *dataModel;
 
-    IBLPort *iblPort;
-    IblPortSettings *serial;
+    QTimer *requestTimer;
+    bool startRequestTimer();
+    bool stopRequestTimer();
 
-
-
+private slots:
+    void request();
+    void scrollToLastVal();
 
 
 };
