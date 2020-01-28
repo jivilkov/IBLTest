@@ -1,12 +1,14 @@
 #ifndef SERIAL_H
 #define SERIAL_H
 
-#define SIZE_PACK 44
+#define BYTES_FOR_PROCESSING 440
 
+#include "settings.h"
+#include "rawhandler.h"
 #include <QSerialPort>
 #include <QThread>
 
-#include "settings.h"
+#include <QApplication>
 
 class Serial : public QThread
 {
@@ -18,7 +20,8 @@ public:
 
     void stop();
     void setSettings(Settings *s){ settings = s; }
-    qint64 sizeDataBuffer() { return dataBuffer.length() * SIZE_PACK; }
+
+    void setRawHandler(RawHandler *r){ rawHandler = r; }
 
 protected:
     virtual void run();
@@ -29,10 +32,12 @@ private:
     void disconnectPort();
     void viewPortSettings();
 
-    QList<QByteArray> dataBuffer;
+    void startRawHandler();
+    void stopRawHandler();
 
     Settings *settings;
     QSerialPort *serial;
+    RawHandler *rawHandler;
 };
 
 #endif // SERIAL_H

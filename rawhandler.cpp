@@ -2,11 +2,35 @@
 
 RawHandler::RawHandler()
 {
+    workFlag = false;
+}
 
+RawHandler::~RawHandler()
+{
+
+}
+
+void RawHandler::run()
+{
+    workFlag = true;
+    qDebug() << "rawhandler thread started";
+    while(workFlag){
+        if (rawData.size() >= SIZE_PACK){
+            QByteArray pack = rawData.left(SIZE_PACK);
+            rawPackBuffer.append(pack);
+            iblPackBuffer.append(convert(pack));
+            rawData.remove(0, SIZE_PACK);
+        }
+    }
+
+    qDebug() << "rawhandler thread stopped";
 }
 
 IBLData RawHandler::convert(QByteArray b)
 {
+
+    // Check errors!
+
     IBLData ibl;
     ibl.head = (b[1] & 0xFF) + ((b[0] & 0xFF));
     ibl.counter = (b[3] & 0xFF) + ((b[2] & 0xFF));
@@ -49,4 +73,19 @@ IBLData RawHandler::convert(QByteArray b)
 
     ibl.CRC16 = ((b[43] & 0xFF) << 8) + (b[42] & 0xFF);
 
+    return ibl;
+}
+
+QList<IBLData> RawHandler::getIblPacks()
+{
+    QList<IBLData> packs = iblPackBuffer;
+    iblPackBuffer.clear();
+    return packs;
+}
+
+QList<QByteArray> RawHandler::getRawPacks()
+{
+    QList<QByteArray> packs = rawPackBuffer;
+    rawPackBuffer.clear();
+    return packs;
 }

@@ -10,20 +10,22 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+
     dataModel = new DataModel();
-    //connect(dataModel, SIGNAL(layoutChanged(QList<QPersistentModelIndex>,QAbstractItemModel::LayoutChangeHint)),SLOT(scrollToLastVal()));
+    connect(dataModel, SIGNAL(layoutChanged(QList<QPersistentModelIndex>,QAbstractItemModel::LayoutChangeHint)),SLOT(scrollToLastVal()));
+
     ui->tableView->setModel(dataModel);
     ui->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->tableView->verticalScrollBarPolicy();
-
-    serial = new Serial();
 
     ui->actionConnect->setDisabled(false);
     ui->actionDisconnect->setDisabled(true);
 
     settings = NULL;
     serial = NULL;
+    rawHandler = NULL;
     requestTimer = NULL;
+
 }
 
 MainWindow::~MainWindow()
@@ -31,14 +33,19 @@ MainWindow::~MainWindow()
     if (settings) delete settings;
     if (serial) delete serial;
     if (requestTimer) delete requestTimer;
+    if (rawHandler) delete rawHandler;
     delete ui;
 }
 
 void MainWindow::on_actionConnect_triggered()
 {
+    rawHandler = new RawHandler();
     settings = new Settings();
     serial = new Serial();
+    serial->setRawHandler(rawHandler);
     serial->setSettings(settings);
+
+
     connect(serial, SIGNAL(started()), SLOT(disabledMenuAtConnection()));
     connect(serial, SIGNAL(finished()), SLOT(disabledMenuAtDisconnection()));
 
@@ -46,11 +53,11 @@ void MainWindow::on_actionConnect_triggered()
     serial->start();
     startRequestTimer();
 
-    IBLData t;
-    for (int i=0; i<100; i++){
-        t.counter = i;
-        dataModel->addTableData(t);
-    }
+//    IBLData t;
+//    for (int i=0; i<100; i++){
+//        t.counter = i;
+//        dataModel->addTableData(t);
+//    }
 }
 
 void MainWindow::on_actionDisconnect_triggered()
@@ -101,6 +108,11 @@ bool MainWindow::stopRequestTimer()
 
 void MainWindow::request()
 {
+    QList<IBLData> iblDatas = rawHandler->getIblPacks();
+    foreach(IBLData iblData, iblDatas){
+        dataModel->addTableData(iblData);
+    }
+    ui->statusBar->showMessage(QString("Ibl data: %0 b").arg(dataModel->count() * 44));
 
 }
 

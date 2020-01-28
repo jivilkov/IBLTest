@@ -5,6 +5,7 @@
 Serial::Serial()
 {
     serial = NULL;
+    rawHandler = NULL;
     workFlag = false;
 }
 
@@ -21,16 +22,21 @@ void Serial::stop()
 void Serial::run()
 {
     workFlag = true;
+    qDebug() << "serial thread started";
     if (connectPort()){
-        qDebug() << "serial thread started";
-
+        startRawHandler();
         while (workFlag){
-            if (serial->bytesAvailable() >= SIZE_PACK){
-                dataBuffer.append(serial->read(SIZE_PACK));
+            qApp->processEvents();
+            if (serial->bytesAvailable() >= BYTES_FOR_PROCESSING){
+                if (rawHandler!=NULL && rawHandler->isRunning()){
+                    rawHandler->setRawData(serial->read(BYTES_FOR_PROCESSING));
+                }
             }
         };
 
+        stopRawHandler();
         disconnectPort();
+
         qDebug() << "serial thread stopped";
     }
 }
@@ -52,8 +58,8 @@ bool Serial::connectPort()
     serial->setFlowControl((QSerialPort::FlowControl)settings->serial().flowControl);
 
     if (serial->open(QIODevice::ReadWrite)){
-        viewPortSettings();
         qDebug() << "port open";
+        viewPortSettings();
         return true;
     } else {
         qDebug() << "error open port";
@@ -66,6 +72,7 @@ void Serial::disconnectPort()
     if (serial!=NULL && serial->isOpen()){
         serial->flush();
         serial->close();
+        serial->deleteLater();
         serial = NULL;
         qDebug() << "port close";
     }
@@ -81,4 +88,20 @@ void Serial::viewPortSettings()
         qDebug() << "Stop bits: " << serial->stopBits();
         qDebug() << "Flow control: " << serial->flowControl();
     }
+}
+
+void Serial::startRawHandler()
+{
+    if (rawHandler!=NULL){
+        qDebug() << "rawhandler processing starting";
+        rawHandler->start();
+    } else qDebug() << "error rawhandler processing starting";
+}
+
+void Serial::stopRawHandler()
+{
+    if (rawHandler!=NULL && rawHandler->isRunning()){
+        qDebug() << "rawhandler processing stopping";
+        rawHandler->stop();
+    } else qDebug() << "rawhandler processing stopping";
 }

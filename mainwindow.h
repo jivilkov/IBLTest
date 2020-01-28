@@ -1,15 +1,18 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#define REQUEST_INTERVAL 1000
+#define REQUEST_INTERVAL 100
 
 #include "settings.h"
 #include "serial.h"
 #include "datamodel.h"
+#include "crc16.h"
+#include "rawhandler.h"
 
 #include <QMainWindow>
 #include <QTimer>
 #include <QScrollBar>
+
 
 namespace Ui {
 class MainWindow;
@@ -36,6 +39,8 @@ private:
     Ui::MainWindow *ui;
     Serial *serial;
     DataModel *dataModel;
+
+    RawHandler *rawHandler;
 
     QTimer *requestTimer;
     bool startRequestTimer();
