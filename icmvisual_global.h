@@ -1,0 +1,12 @@
+#ifndef ICMVISUAL_GLOBAL_H
+#define ICMVISUAL_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(ICMVISUAL_LIBRARY)
+#  define ICMVISUALSHARED_EXPORT Q_DECL_EXPORT
+#else
+#  define ICMVISUALSHARED_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // ICMVISUAL_GLOBAL_H

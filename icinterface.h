@@ -1,0 +1,4 @@
+#ifndef ICINTERFACE_H
+#define ICINTERFACE_H
+
+#endif // ICINTERFACE_H
