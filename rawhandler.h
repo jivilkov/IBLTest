@@ -2,11 +2,18 @@
 #define RAWHANDLER_H
 
 #define SIZE_PACK 44
+
 #define ACC_SCALE .00015258789062361865f;
 #define GYRO_SCALE .00002196f;
 #define SYNC_SCALE .000000016666f;
 
+
+//#define ACC_SCALE .0000003814697265625f;
+//#define GYRO_SCALE .0000000549f;
+//#define SYNC_SCALE .00000001666666666667f;
+
 #include "ibldata.h"
+#include "crc16.h"
 #include <QDebug>
 #include <QThread>
 

@@ -1,7 +1,7 @@
 #ifndef SERIAL_H
 #define SERIAL_H
 
-#define BYTES_FOR_PROCESSING 440
+#define BYTES_FOR_PROCESSING 44
 
 #include "settings.h"
 #include "rawhandler.h"
@@ -20,7 +20,6 @@ public:
 
     void stop();
     void setSettings(Settings *s){ settings = s; }
-
     void setRawHandler(RawHandler *r){ rawHandler = r; }
 
 protected:
@@ -28,6 +27,8 @@ protected:
 
 private:
     bool workFlag;
+    bool headMatchFlag;
+
     bool connectPort();
     void disconnectPort();
     void viewPortSettings();

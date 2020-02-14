@@ -13,6 +13,8 @@
 #include <QTimer>
 #include <QScrollBar>
 
+#include "graphwindow.h"
+
 
 namespace Ui {
 class MainWindow;
@@ -46,9 +48,20 @@ private:
     bool startRequestTimer();
     bool stopRequestTimer();
 
+    QList<GraphWindow*> gWindows;
+    QItemSelectionModel *itemModel;
+    //qint32 columnSelection;
+    QList<quint8> columnSelection;
+
+    QString toBin(int dec);
+
 private slots:
     void request();
     void scrollToLastVal();
+    void on_buttonClearData_clicked();
+    void on_buttonGraphics_clicked();
+
+    void selectCols(QItemSelection selected, QItemSelection deselected);
 
 
 };

@@ -6,7 +6,7 @@
 
 QT       += core gui
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets serialport
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets serialport charts
 
 TARGET = IBLTest
 TEMPLATE = app
@@ -24,20 +24,25 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += main.cpp\
+    chart.cpp \
         mainwindow.cpp \
     settings.cpp \
     serial.cpp \
     datamodel.cpp \
     rawhandler.cpp \
-    crc16.cpp
+    crc16.cpp \
+    graphwindow.cpp
 
 HEADERS  += mainwindow.h \
+    chart.h \
     settings.h \
     serial.h \
     datamodel.h \
     ibldata.h \
     rawhandler.h \
-    crc16.h
+    crc16.h \
+    ibldata.h \
+    graphwindow.h
 
 FORMS    += mainwindow.ui \
-    settings.ui
+    settings.ui \

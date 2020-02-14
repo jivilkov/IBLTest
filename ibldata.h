@@ -5,17 +5,17 @@
 
 struct IBLData {
     qint16 head;
-    qint16 counter;
-    qint32 speedAcc1;
-    qint32 speedAcc2;
-    qint32 speedAcc3;
+    quint16 counter;
+    float speedAcc1;
+    float speedAcc2;
+    float speedAcc3;
     qint16 countAcc1;
     qint16 countAcc2;
     qint16 countAcc3;
-    qint32 angleInW1;
-    qint32 angleInW2;
-    qint32 angleInW3;
-    qint32 syncLength;
+    float angleInW1;
+    float angleInW2;
+    float angleInW3;
+    float syncLength;
     qint16 chanelStat;
     qint16 multiplex;
     qint16 CRC16;

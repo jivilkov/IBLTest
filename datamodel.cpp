@@ -23,29 +23,28 @@ int DataModel::columnCount(const QModelIndex&) const
 QVariant DataModel::data(const QModelIndex &index, int role) const
 {
     if (role == Qt::DisplayRole){
-         int row = index.row();
-         int col = index.column();
+        int row = index.row();
+        int col = index.column();
+        IBLData table = tableData.at(row);
 
-            IBLData table = tableData.at(row);
-
-            switch(col) {
-                    case    0: return table.head;
-                    case    1: return table.counter;
-                    case    2: return table.speedAcc1;
-                    case    3: return table.speedAcc2;
-                    case    4: return table.speedAcc3;
-                    case    5: return table.countAcc1;
-                    case    6: return table.countAcc2;
-                    case    7: return table.countAcc3;
-                    case    8: return table.angleInW1;
-                    case    9: return table.angleInW2;
-                    case   10: return table.angleInW3;
-                    case   11: return table.syncLength;
-                    case   12: return table.chanelStat;
-                    case   13: return table.multiplex;
-                    case   14: return table.CRC16;
-                    case   15: return table.CRC16_check;
-            }
+        switch(col){
+                case    0: return QString("0x%0").arg(QString::number(table.head & 0xFFFF, 16).toUpper());
+                case    1: return table.counter;
+                case    2: return table.speedAcc1;
+                case    3: return table.speedAcc2;
+                case    4: return table.speedAcc3;
+                case    5: return table.countAcc1;
+                case    6: return table.countAcc2;
+                case    7: return table.countAcc3;
+                case    8: return table.angleInW1;
+                case    9: return table.angleInW2;
+                case   10: return table.angleInW3;
+                case   11: return table.syncLength;
+                case   12: return QString::number(table.chanelStat & 0xFFFF, 2);
+                case   13: return table.multiplex;
+                case   14: return QString("0x%0").arg(QString::number(table.CRC16 & 0xFFFF, 16).toUpper());
+                case   15: return QString("0x%0").arg(QString::number(table.CRC16_check & 0xFFFF, 16).toUpper());
+        }
     }
 
     if (role == Qt::TextAlignmentRole) return QVariant(Qt::AlignCenter);
@@ -91,4 +90,11 @@ void DataModel::addTableData(IBLData t)
 int DataModel::count()
 {
     return tableData.length();
+}
+
+void DataModel::clear()
+{
+    tableData.clear();
+    emit    layoutAboutToBeChanged();   // собираюсь внести изменения в таблицу!!
+    emit    layoutChanged();            // внести изменения
 }

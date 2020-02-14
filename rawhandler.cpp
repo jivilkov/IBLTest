@@ -15,6 +15,7 @@ void RawHandler::run()
     workFlag = true;
     qDebug() << "rawhandler thread started";
     while(workFlag){
+        msleep(10);
         if (rawData.size() >= SIZE_PACK){
             QByteArray pack = rawData.left(SIZE_PACK);
             rawPackBuffer.append(pack);
@@ -32,8 +33,8 @@ IBLData RawHandler::convert(QByteArray b)
     // Check errors!
 
     IBLData ibl;
-    ibl.head = (b[1] & 0xFF) + ((b[0] & 0xFF));
-    ibl.counter = (b[3] & 0xFF) + ((b[2] & 0xFF));
+    ibl.head = ((b[1] & 0xFF) << 8) + ((b[0] & 0xFF));
+    ibl.counter = ((b[3] & 0xFF) << 8) + ((b[2] & 0xFF));
 
     qint32 speedAcc;
     speedAcc = ((b[7] & 0xFF) << 24) + ((b[6] & 0xFF) << 16) +
@@ -72,6 +73,9 @@ IBLData RawHandler::convert(QByteArray b)
     ibl.multiplex = (((b[41] & 0xFF) << 8) + (b[40] & 0xFF));
 
     ibl.CRC16 = ((b[43] & 0xFF) << 8) + (b[42] & 0xFF);
+
+    b.remove(42, 2);
+    b.remove(0, 2);
 
     return ibl;
 }

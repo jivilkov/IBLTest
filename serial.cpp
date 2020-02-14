@@ -22,15 +22,41 @@ void Serial::stop()
 void Serial::run()
 {
     workFlag = true;
+    headMatchFlag = false;
     qDebug() << "serial thread started";
     if (connectPort()){
+
         startRawHandler();
+
         while (workFlag){
+
             qApp->processEvents();
+            msleep(1);
+
             if (serial->bytesAvailable() >= BYTES_FOR_PROCESSING){
+
                 if (rawHandler!=NULL && rawHandler->isRunning()){
-                    rawHandler->setRawData(serial->read(BYTES_FOR_PROCESSING));
+
+                    if (!headMatchFlag){
+
+                        unsigned char head;
+                        serial->read((char*)&head, 1);
+                        if (head == 0xC0){
+                            serial->read((char*)&head, 1);
+                            if (head == 0xC5) {
+                                quint8 header[2] = {0xC0, 0xC5};
+                                QByteArray send(QByteArray((char*)header, 2));
+                                rawHandler->setRawData(send);
+                                rawHandler->setRawData(serial->read(BYTES_FOR_PROCESSING - 2));
+                                headMatchFlag = true;
+                            }
+
+                        }
+                    } else {
+                        rawHandler->setRawData(serial->read(BYTES_FOR_PROCESSING));
+                    }
                 }
+
             }
         };
 
@@ -57,7 +83,7 @@ bool Serial::connectPort()
     serial->setStopBits((QSerialPort::StopBits)settings->serial().stopBits);
     serial->setFlowControl((QSerialPort::FlowControl)settings->serial().flowControl);
 
-    if (serial->open(QIODevice::ReadWrite)){
+    if (serial->open(QIODevice::ReadOnly)){
         qDebug() << "port open";
         viewPortSettings();
         return true;

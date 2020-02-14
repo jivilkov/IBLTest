@@ -19,6 +19,7 @@ public:
 
     void addTableData(IBLData t);
     int count();
+    void clear();
 
 private:
     int             rowCount(const QModelIndex &parent = QModelIndex()) const ;
