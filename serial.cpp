@@ -4,8 +4,8 @@
 
 Serial::Serial()
 {
-    serial = NULL;
-    rawHandler = NULL;
+    serial = nullptr;
+    rawHandler = nullptr;
     workFlag = false;
 }
 
@@ -30,15 +30,14 @@ void Serial::run()
 
         while (workFlag){
 
-            qApp->processEvents();
             msleep(1);
+            qApp->processEvents();
 
             if (serial->bytesAvailable() >= BYTES_FOR_PROCESSING){
 
-                if (rawHandler!=NULL && rawHandler->isRunning()){
+                if (rawHandler!=nullptr && rawHandler->isRunning()){
 
                     if (!headMatchFlag){
-
                         unsigned char head;
                         serial->read((char*)&head, 1);
                         if (head == 0xC0){
@@ -50,13 +49,11 @@ void Serial::run()
                                 rawHandler->setRawData(serial->read(BYTES_FOR_PROCESSING - 2));
                                 headMatchFlag = true;
                             }
-
                         }
                     } else {
                         rawHandler->setRawData(serial->read(BYTES_FOR_PROCESSING));
                     }
                 }
-
             }
         };
 
@@ -69,7 +66,7 @@ void Serial::run()
 
 bool Serial::connectPort()
 {
-    settings = new Settings();
+    //settings = new Settings();
     if (!settings){
         qDebug() << "error reading settings file";
         return false;
@@ -78,10 +75,10 @@ bool Serial::connectPort()
     serial = new QSerialPort();
     serial->setPortName(settings->serial().portName);
     serial->setBaudRate(settings->serial().baudRate);
-    serial->setDataBits((QSerialPort::DataBits)settings->serial().dataBits);
-    serial->setParity((QSerialPort::Parity)settings->serial().parity);
-    serial->setStopBits((QSerialPort::StopBits)settings->serial().stopBits);
-    serial->setFlowControl((QSerialPort::FlowControl)settings->serial().flowControl);
+    serial->setDataBits(static_cast<QSerialPort::DataBits>(settings->serial().dataBits));
+    serial->setParity(static_cast<QSerialPort::Parity>(settings->serial().parity));
+    serial->setStopBits(static_cast<QSerialPort::StopBits>(settings->serial().stopBits));
+    serial->setFlowControl(static_cast<QSerialPort::FlowControl>(settings->serial().flowControl));
 
     if (serial->open(QIODevice::ReadOnly)){
         qDebug() << "port open";

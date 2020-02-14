@@ -15,7 +15,7 @@ void RawHandler::run()
     workFlag = true;
     qDebug() << "rawhandler thread started";
     while(workFlag){
-        msleep(10);
+        msleep(1);
         if (rawData.size() >= SIZE_PACK){
             QByteArray pack = rawData.left(SIZE_PACK);
             rawPackBuffer.append(pack);

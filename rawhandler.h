@@ -17,6 +17,8 @@
 #include <QDebug>
 #include <QThread>
 
+#include <QApplication>
+
 class RawHandler : public QThread
 {
     Q_OBJECT

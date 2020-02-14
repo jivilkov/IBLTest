@@ -24,7 +24,7 @@ MainWindow::MainWindow(QWidget *parent) :
             SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
             SLOT(selectCols(QItemSelection,QItemSelection)));
 
-    settings = NULL;
+    settings = new Settings();
     serial = NULL;
     rawHandler = NULL;
     requestTimer = NULL;
@@ -46,7 +46,7 @@ MainWindow::~MainWindow()
 void MainWindow::on_actionConnect_triggered()
 {
     rawHandler = new RawHandler();
-    settings = new Settings();
+
     serial = new Serial();
     serial->setRawHandler(rawHandler);
     serial->setSettings(settings);
@@ -56,6 +56,7 @@ void MainWindow::on_actionConnect_triggered()
 
     serial->start();
     startRequestTimer();
+    qDebug() << "Connect";
 }
 
 void MainWindow::on_actionDisconnect_triggered()
